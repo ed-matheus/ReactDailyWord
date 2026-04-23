@@ -1,3 +1,5 @@
+import { useState } from 'react';
+
 // Icons
 import { FaBookOpen } from "react-icons/fa"
 import { FaCross } from "react-icons/fa6";
@@ -5,7 +7,49 @@ import { IoMusicalNotes } from "react-icons/io5";
 import { FaLightbulb } from "react-icons/fa";
 import { FaRegCheckCircle } from "react-icons/fa";
 
-const Form = ({  }) => {
+const Form = ({ sendData }) => {  
+  const [leitura, setLeitura] = useState({
+    data: "",
+    dia: "",
+    antigo: "",
+    novo: "",
+    salmos: "",
+    proverbios: "",
+  })
+
+  const handleChange = (e) => {
+    const name = e.target.name
+    const value = e.target.value
+    const date = new Date()
+    const formattedDate = date.toLocaleDateString("pt-BR")
+    const weekDay = date.toLocaleDateString("pt-BR", {
+      weekday: "long",
+    })
+
+    // console.log(value)
+
+    setLeitura({
+      ...leitura,
+      [name]: value,
+      data: formattedDate,
+      dia: weekDay
+    })
+  }
+
+  const handleSubmit = () => {
+    const someFilledInput = Object.values(leitura).some(value => value !== "")
+
+    if (someFilledInput) {
+      console.log("Chique")
+    } else {
+      alert("Preencha pelo menos um campo.")
+    }
+
+    // console.log(historico)
+
+    sendData(leitura)
+  }
+
   return (
     <form className='p-4 flex flex-col gap-3'>
       {/* Antigo Testamento */}
@@ -18,8 +62,10 @@ const Form = ({  }) => {
           <label htmlFor="antigo" className='flex text-sm text-black font-semibold'>Antigo Testamento</label>
           <input
             id='antigo'
+            name='antigo'
             type="text"
             placeholder='Ex.: Gênesis 1-2'
+            onChange={handleChange}
             className='border border-gray-300 rounded-md p-2 w-60 placeholder:text-sm'
           />
         </div>
@@ -35,8 +81,10 @@ const Form = ({  }) => {
           <label htmlFor="novo" className='flex text-sm text-black font-semibold'>Novo Testamento</label>
           <input
             id='novo'
+            name='novo'
             type="text"
             placeholder='Ex.: Mateus 1-2'
+            onChange={handleChange}
             className='border border-gray-300 rounded-md p-2 w-60 placeholder:text-sm'
           />
         </div>
@@ -52,8 +100,10 @@ const Form = ({  }) => {
           <label htmlFor="salmos" className='flex text-sm text-black font-semibold'>Salmos</label>
           <input
             id='salmos'
+            name='salmos'
             type="text"
             placeholder='Ex.: Salmo 1'
+            onChange={handleChange}
             className='border border-gray-300 rounded-md p-2 w-60 placeholder:text-sm'
           />
         </div>
@@ -66,11 +116,13 @@ const Form = ({  }) => {
         </div>
         
         <div className='flex flex-col gap-1'>
-          <label htmlFor="salmos" className='flex text-sm text-black font-semibold'>Provérbios</label>
+          <label htmlFor="proverbios" className='flex text-sm text-black font-semibold'>Provérbios</label>
           <input
-            id='salmos'
+            id='proverbios'
+            name='proverbios'
             type="text"
             placeholder='Ex.: Provérbios 1'
+            onChange={handleChange}
             className='border border-gray-300 rounded-md p-2 w-60 placeholder:text-sm'
           />
         </div>
@@ -78,6 +130,7 @@ const Form = ({  }) => {
 
       <button
         type="button"
+        onClick={handleSubmit}
         className="bg-indigo-500 text-white flex items-center justify-center gap-2 p-3 rounded-lg"
       >
         <FaRegCheckCircle />

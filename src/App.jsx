@@ -3,13 +3,24 @@ import './App.css'
 // Components
 import Header from './components/Header'
 import Form from './components/Form';
+import InfoCard from './components/InfoCard';
 
 // Icons
 import { FaRegCalendar } from "react-icons/fa6";
 import { FiClock } from "react-icons/fi";
-import InfoCard from './components/InfoCard';
+import { useState } from 'react';
 
 function App() {
+  const [historico, setHistorico] = useState([])
+
+  const addNewReading = (leitura) => {
+    console.log(leitura)
+    // Add reading to the historic
+    setHistorico((prevHistorico) => [leitura, ...prevHistorico]);
+    console.log(historico)
+  }
+  
+
   return (
     <>
       <Header />
@@ -27,9 +38,10 @@ function App() {
           </div>
         </div>
 
-        <Form />
+        <Form sendData={addNewReading} />
       </section>
 
+      {/* Latest Reading */}
       <section className='bg-white mx-5 my-4 shadow-md rounded-md'>
         <div className='flex items-center justify-start gap-3 p-4'>
           <div className='bg-indigo-50 w-8 h-8 p-2 rounded-lg flex justify-center items-center'>
@@ -43,7 +55,15 @@ function App() {
         </div>
 
         <div className='flex flex-col p-4'>
-          <InfoCard />
+          <ul>
+            {
+              historico.map((item, i) => (
+                <li key={i}>
+                  <InfoCard {...item} />
+                </li>
+              ))
+            }
+          </ul>
         </div>
       </section>
     </>
