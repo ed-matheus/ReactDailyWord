@@ -4,7 +4,7 @@ import { FiMoon } from "react-icons/fi";
 
 const Header = () => {
   return (
-    <div className='bg-white text-xl font-medium p-4 flex justify-between shadow-md mb-5'>
+    <div className='bg-white text-xl font-bold p-4 flex justify-between shadow-md'>
       <div className="flex items-center gap-1.5">
         <FaBookBible className="text-indigo-500" />
         <h2 className="text-black">
