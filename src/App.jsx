@@ -16,16 +16,16 @@ function App() {
 
   const addNewReading = (leitura) => {
     // Bloqueio de leitura no mesmo dia
-    const jaRegistrado = historico.some(item => item.data === leitura.data);
+    const registered = historico.some(item => item.data === leitura.data);
     
-    if (jaRegistrado) {
+    if (registered) {
       alert("Você já registrou a leitura de hoje!");
       return;
     }
 
     // Adiciona ID único usando o timestamp
-    const novaLeitura = { ...leitura, id: Date.now() };
-    setHistorico((prev) => [novaLeitura, ...prev]);
+    const newReading = { ...leitura, id: Date.now() };
+    setHistorico((prev) => [newReading, ...prev]);
   }
 
   const deleteReading = (id) => {

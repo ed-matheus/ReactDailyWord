@@ -1,13 +1,9 @@
 import { useState } from 'react';
-
-// Icons
-import { FaBookOpen } from "react-icons/fa"
+import { FaBookOpen, FaRegCalendar, FaLightbulb, FaRegCheckCircle } from "react-icons/fa";
 import { FaCross } from "react-icons/fa6";
 import { IoMusicalNotes } from "react-icons/io5";
-import { FaLightbulb } from "react-icons/fa";
-import { FaRegCheckCircle } from "react-icons/fa";
 
-const Form = ({ sendData }) => {  
+const Form = ({ sendData }) => {
   const [leitura, setLeitura] = useState({
     data: "",
     dia: "",
@@ -17,111 +13,94 @@ const Form = ({ sendData }) => {
     proverbios: "",
   });
 
+  // Define os limites de data
+  const hojeInput = new Date().toISOString().split('T')[0];
+  const dataMinima = "2000-01-01";
+
   const handleChange = (e) => {
     const { name, value } = e.target;
-    const date = new Date();
-    
-    setLeitura({
-      ...leitura,
-      [name]: value,
-      data: date.toLocaleDateString("pt-BR"),
-      dia: date.toLocaleDateString("pt-BR", { weekday: "long" })
-    });
+
+    if (name === "data") {
+      // O 'T00:00:00' garante que o JS não mude o dia por causa do fuso horário
+      const selectedDate = new Date(value + 'T00:00:00');
+      
+      setLeitura({
+        ...leitura,
+        data: selectedDate.toLocaleDateString("pt-BR"),
+        dia: selectedDate.toLocaleDateString("pt-BR", { weekday: "long" })
+      });
+    } else {
+      setLeitura({ ...leitura, [name]: value });
+    }
   };
 
   const handleSubmit = (e) => {
-    e.preventDefault(); // Impede o recarregamento da página
+    e.preventDefault();
 
-    const { antigo, novo, salmos, proverbios } = leitura;
-    if (antigo || novo || salmos || proverbios) {
+    // Pega o valor bruto do input de data para validar
+    const rawDate = e.target.data.value;
+    const { antigo, novo, salmos, proverbios, data } = leitura;
+
+    if (rawDate > hojeInput) {
+      alert("Você não pode registrar uma leitura no futuro!");
+      return;
+    }
+
+    if ((antigo || novo || salmos || proverbios) && data) {
       sendData(leitura);
-      
-      // Clear the fields (HTML)
-      e.target.reset(); 
-      
-      // Clear the state for the next register
+      e.target.reset();
       setLeitura({ data: "", dia: "", antigo: "", novo: "", salmos: "", proverbios: "" });
+    } else if (!data) {
+      alert("Selecione uma data válida.");
     } else {
-      alert("Preencha pelo menos um campo.");
+      alert("Preencha pelo menos um campo de leitura.");
     }
   };
 
   return (
-    // Mudamos de onClick no botão para onSubmit no form
     <form onSubmit={handleSubmit} className='p-4 flex flex-col gap-3'>
-      {/* Inputs (mantidos como estavam) */}
-      <div className='flex items-center justify-start gap-2'>
-        <div className='bg-violet-100 w-10 h-10 rounded-full flex justify-center items-center'>
-          <FaBookOpen className='text-indigo-600' />
+      {/* Campos de texto - Antigo, Novo, Salmos, Provérbios */}
+      {[
+        { id: 'antigo', label: 'Antigo Testamento', icon: <FaBookOpen className='text-indigo-600' />, bg: 'bg-violet-100' },
+        { id: 'novo', label: 'Novo Testamento', icon: <FaCross className='text-blue-500' />, bg: 'bg-blue-100' },
+        { id: 'salmos', label: 'Salmos', icon: <IoMusicalNotes className='text-green-500' />, bg: 'bg-green-100' },
+        { id: 'proverbios', label: 'Provérbios', icon: <FaLightbulb className='text-yellow-500' />, bg: 'bg-yellow-100' }
+      ].map((field) => (
+        <div key={field.id} className='flex items-center justify-start gap-2'>
+          <div className={`${field.bg} w-10 h-10 rounded-full flex justify-center items-center`}>
+            {field.icon}
+          </div>
+          <div className='flex flex-col gap-1'>
+            <label htmlFor={field.id} className='flex text-sm text-black font-semibold'>{field.label}</label>
+            <input
+              id={field.id} name={field.id} type="text"
+              placeholder='Ex.: Capítulos 1-2'
+              onChange={handleChange}
+              className='border border-gray-300 rounded-md p-2 w-60 placeholder:text-sm'
+            />
+          </div>
         </div>
-        <div className='flex flex-col gap-1'>
-          <label htmlFor="antigo" className='flex text-sm text-black font-semibold'>Antigo Testamento</label>
-          <input
-            id='antigo'
-            name='antigo'
-            type="text"
-            placeholder='Ex.: Gênesis 1-2'
-            onChange={handleChange}
-            className='border border-gray-300 rounded-md p-2 w-60 placeholder:text-sm'
-          />
-        </div>
-      </div>
+      ))}
 
-      <div className='flex items-center justify-start gap-2'>
-        <div className='bg-blue-100 w-10 h-10 rounded-full flex justify-center items-center'>
-          <FaCross className='text-blue-500' />
-        </div>
-        <div className='flex flex-col gap-1'>
-          <label htmlFor="novo" className='flex text-sm text-black font-semibold'>Novo Testamento</label>
-          <input
-            id='novo'
-            name='novo'
-            type="text"
-            placeholder='Ex.: Mateus 1-2'
-            onChange={handleChange}
-            className='border border-gray-300 rounded-md p-2 w-60 placeholder:text-sm'
-          />
-        </div>
-      </div>
-
-      <div className='flex items-center justify-start gap-2'>
-        <div className='bg-green-100 w-10 h-10 rounded-full flex justify-center items-center'>
-          <IoMusicalNotes className='text-green-500' />
-        </div>
-        <div className='flex flex-col gap-1'>
-          <label htmlFor="salmos" className='flex text-sm text-black font-semibold'>Salmos</label>
-          <input
-            id='salmos'
-            name='salmos'
-            type="text"
-            placeholder='Ex.: Salmo 1'
-            onChange={handleChange}
-            className='border border-gray-300 rounded-md p-2 w-60 placeholder:text-sm'
-          />
-        </div>
-      </div>
-
+      {/* Input de Data com travas min e max */}
       <div className='flex items-center justify-start gap-2 mb-4'>
-        <div className='bg-yellow-100 w-10 h-10 rounded-full flex justify-center items-center'>
-          <FaLightbulb className='text-yellow-500' />
+        <div className='bg-indigo-100 w-10 h-10 rounded-full flex justify-center items-center'>
+          <FaRegCalendar className='text-indigo-500' />
         </div>
         <div className='flex flex-col gap-1'>
-          <label htmlFor="proverbios" className='flex text-sm text-black font-semibold'>Provérbios</label>
+          <label htmlFor="data" className='flex text-sm text-black font-semibold'>Data da leitura</label>
           <input
-            id='proverbios'
-            name='proverbios'
-            type="text"
-            placeholder='Ex.: Provérbios 1'
+            id='data' name='data' type="date"
+            min={dataMinima}
+            max={hojeInput}
+            required
             onChange={handleChange}
-            className='border border-gray-300 rounded-md p-2 w-60 placeholder:text-sm'
+            className='border border-gray-300 rounded-md p-2 w-60 text-sm'
           />
         </div>
       </div>
 
-      <button
-        type="submit"
-        className="bg-indigo-500 text-white flex items-center justify-center gap-2 p-3 rounded-lg"
-      >
+      <button type="submit" className="bg-indigo-500 text-white flex items-center justify-center gap-2 p-3 rounded-lg hover:bg-indigo-600 transition-colors">
         <FaRegCheckCircle />
         <span className="text-sm">Registrar leitura</span>
       </button>
