@@ -1,7 +1,11 @@
 import './App.css'
+
+// Components
 import Header from './components/Header'
 import Form from './components/Form';
 import InfoCard from './components/InfoCard';
+
+// Icons
 import { FaRegCalendar } from "react-icons/fa6";
 import { FiClock } from "react-icons/fi";
 import { useEffect, useState } from 'react';

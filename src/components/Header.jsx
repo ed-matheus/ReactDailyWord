@@ -9,7 +9,7 @@ const Header = () => {
         <FaBookBible className="text-indigo-500" />
         <h2 className="text-black">
           Daily
-          <span className='text-indigo-500'>Word</span>
+          <span className='text-indigo-500'>Bible</span>
         </h2>
       </div>
 
